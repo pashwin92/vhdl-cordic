@@ -1,0 +1,183 @@
+m255
+K3
+13
+cModel Technology
+dC:\Users\Denis\sdrive\ESD2\labs\03\ModelSim
+Ecordic
+Z0 w1358060240
+Z1 DPx4 work 16 cordic_stage_pkg 0 22 DhHLB1R=5<D52f83bJ[J=2
+Z2 DPx4 ieee 15 std_logic_arith 0 22 4`Y?g_lkdn;7UL9IiJck01
+Z3 DPx4 ieee 16 std_logic_signed 0 22 E>OLoMaBGQ?hbGgOoNXM^1
+Z4 DPx4 ieee 11 numeric_std 0 22 O3PF8EB`?j9=z7KT`fn941
+Z5 DPx3 std 6 textio 0 22 5>J:;AW>W0[[dW0I6EN1Q0
+Z6 DPx4 ieee 14 std_logic_1164 0 22 5=aWaoGZSMWIcH0i^f`XF1
+Z7 dC:\Users\Denis\sdrive\ESD2\labs\04
+Z8 8C:/Users/Denis/sdrive/ESD2/labs/04/cordic.vhd
+Z9 FC:/Users/Denis/sdrive/ESD2/labs/04/cordic.vhd
+l0
+L9
+V2l4kE7SUOB6PKTb3ob@KF3
+Z10 OP;C;10.1d;51
+32
+Z11 !s108 1358060243.097000
+Z12 !s90 -reportprogress|300|-work|work|-2002|-explicit|C:/Users/Denis/sdrive/ESD2/labs/04/cordic.vhd|
+Z13 !s107 C:/Users/Denis/sdrive/ESD2/labs/04/cordic.vhd|
+Z14 o-work work -2002 -explicit -O0
+Z15 tExplicit 1
+!s100 =GhCVb[C4kOIS;eZ=IDNM2
+!i10b 1
+Artl
+R1
+R2
+R3
+R4
+R5
+R6
+DEx4 work 6 cordic 0 22 2l4kE7SUOB6PKTb3ob@KF3
+l84
+L38
+V@Rz@8KjI<ANiL4o3KJVJ72
+R10
+32
+R11
+R12
+R13
+R14
+R15
+!s100 fjAIZi^I;CUI:kQ`a3gao1
+!i10b 1
+Ecordic_stage
+Z16 w1358059956
+Z17 DPx4 work 19 signed_bitshift_pkg 0 22 kZ^`V@g7TMThX1JnBVQ=o1
+R4
+R5
+R6
+R7
+Z18 8C:/Users/Denis/sdrive/ESD2/labs/04/cordic_stage.vhd
+Z19 FC:/Users/Denis/sdrive/ESD2/labs/04/cordic_stage.vhd
+l0
+L35
+VNa4WAo@?Y2n@h`@^g>LZ91
+R10
+32
+Z20 !s108 1358059960.209000
+Z21 !s90 -reportprogress|300|-work|work|-2002|-explicit|C:/Users/Denis/sdrive/ESD2/labs/04/cordic_stage.vhd|
+Z22 !s107 C:/Users/Denis/sdrive/ESD2/labs/04/cordic_stage.vhd|
+R14
+R15
+!s100 M7`B`9@R=ZdaKJd4jBd[72
+!i10b 1
+Artl
+R17
+R4
+R5
+R6
+DEx4 work 12 cordic_stage 0 22 Na4WAo@?Y2n@h`@^g>LZ91
+l61
+L55
+V@[RjzH`YI?mVNO=c2jTcJ3
+R10
+32
+R20
+R21
+R22
+R14
+R15
+!s100 ?BWL=X^=Z3k57O_]91@6J2
+!i10b 1
+Pcordic_stage_pkg
+R4
+R5
+R6
+R16
+R7
+R18
+R19
+l0
+L5
+VDhHLB1R=5<D52f83bJ[J=2
+R10
+32
+R20
+R21
+R22
+R14
+R15
+!s100 `EYgEXAVOT?blSbG?8C@b1
+!i10b 1
+Ecordic_tb
+Z23 w1358060388
+R4
+R5
+R6
+R7
+Z24 8C:/Users/Denis/sdrive/ESD2/labs/04/cordic_tb.vhd
+Z25 FC:/Users/Denis/sdrive/ESD2/labs/04/cordic_tb.vhd
+l0
+L5
+V9n2ZJh`lQ[2B1E^@KBg]@2
+!s100 eBA[3C8<?aFY2>JSnfell0
+R10
+32
+!i10b 1
+Z26 !s108 1358060394.882000
+Z27 !s90 -reportprogress|300|-work|work|-2002|-explicit|C:/Users/Denis/sdrive/ESD2/labs/04/cordic_tb.vhd|
+Z28 !s107 C:/Users/Denis/sdrive/ESD2/labs/04/cordic_tb.vhd|
+R14
+R15
+Atb
+R4
+R5
+R6
+Z29 DEx4 work 9 cordic_tb 0 22 9n2ZJh`lQ[2B1E^@KBg]@2
+l47
+L8
+VFO7521YSNaGj;mFYhAIaz0
+!s100 c7Lfk7]kg^EFiz>^K5Il52
+R10
+32
+!i10b 1
+R26
+R27
+R28
+R14
+R15
+Psigned_bitshift_pkg
+R4
+R5
+R6
+Z30 w1358050329
+R7
+Z31 8C:/Users/Denis/sdrive/ESD2/labs/04/signed_bitshift_pkg.vhd
+Z32 FC:/Users/Denis/sdrive/ESD2/labs/04/signed_bitshift_pkg.vhd
+l0
+L5
+VkZ^`V@g7TMThX1JnBVQ=o1
+R10
+32
+b1
+Z33 !s108 1358059114.239000
+Z34 !s90 -reportprogress|300|-work|work|-2002|-explicit|C:/Users/Denis/sdrive/ESD2/labs/04/signed_bitshift_pkg.vhd|
+Z35 !s107 C:/Users/Denis/sdrive/ESD2/labs/04/signed_bitshift_pkg.vhd|
+R14
+R15
+!s100 59N8iH@PE]YoCbimJQdjl0
+!i10b 1
+Bbody
+R17
+R4
+R5
+R6
+l0
+L12
+VaUMd=LAVdXTkh=44OA2XT1
+R10
+32
+R33
+R34
+R35
+R14
+R15
+nbody
+!s100 XUnPN@=93`]doF;6EkEHO0
+!i10b 1

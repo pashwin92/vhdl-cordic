@@ -1,0 +1,408 @@
+<html>
+
+<head>
+
+<title>CORDIC</title>
+
+<style type="text/css">
+
+*
+{
+ font-family: "Lucida Console";
+
+ font-size: 11pt;
+}
+
+</style>
+
+</head>
+
+<script type="text/javascript">
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+function Calc_Rotation()
+{
+ // CORDIC : Rotation Mode
+
+ // Rotate the vector (1/K,0) through theta degrees,
+ 
+ // to get cos(theta) and sin(theta). 
+
+ var theta = parseFloat(document.getElementById("angle").value);
+
+ if(theta > 90 || theta < -90)
+ {
+  document.getElementById("txtOut").value = "Theta must be in the range: [-90, 90].";
+
+  return;
+ }
+
+ // Scale theta:
+
+ theta = scale_32(theta/100);
+
+ // calc K after 32 iterations:
+
+ var K = calc_K(32);
+
+ // the vector (x,y):
+
+ var x = 1/K;
+
+ var y = 0;
+
+ // the initial angle, 0 degrees:
+
+ var z = 0;
+
+ // Scale (x,y,z):
+
+ x = scale_32(x);
+
+ y = scale_32(y);
+
+ z = scale_32(z/100);
+
+ // the array of angles to add to z:
+
+ var atan_arr = [];
+
+ atan_arr = calcAtanArr();
+
+ var out_str = "Input (X, Y, Theta) - 32 Bit Scaled Integers (in octal):\r\n\r\n";
+
+ out_str += col_print_int(x) + col_print_int(y) + col_print_int(theta) + "\r\n\r\n";
+
+ out_str += "Cordic - 32 x pseudo-rotations:\r\n\r\n";
+
+ // perform 32 iterations (pseudo-rotations):
+
+ for(var i=0;i<32;i++)
+ {
+  // the direction of rotation:
+
+  var dir = -1;
+
+  if(z < theta)
+  {
+   dir = 1;
+  }
+
+  z = Add_32(z,dir * atan_arr[i]);
+
+  var x_i = x;
+
+  var y_i = y;
+
+  x_i = Sub_32(x_i,dir * (y >> i));
+
+  y_i = Add_32(y_i,dir * (x >> i));
+
+  x = x_i;
+
+  y = y_i;
+
+  out_str += col_print_int(x) + col_print_int(y) + col_print_int(z) + "\r\n";
+ }
+
+ // Unscale (x,y,z):
+
+ x = unscale_32(x);
+
+ y = unscale_32(y);
+
+ z = 100*unscale_32(z);
+
+ out_str += "\r\nResult - Unscaled:\r\n\r\n";
+
+ out_str += col_print(x) + col_print(y) + col_print(z) + "\r\n";
+
+ document.getElementById("txtOut").value = out_str;
+}
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+function Calc_Vector()
+{
+ // CORDIC : Vectoring Mode
+
+ // Rotate the vector (x,y) to the x-axis, to get R and theta: 
+
+ var x = parseFloat(document.getElementById("x_input").value);
+
+ var y = parseFloat(document.getElementById("y_input").value);
+
+ // calc K after 32 iterations:
+
+ var K = calc_K(32);
+
+ // the vector (x,y):
+
+ x = x/K; 
+
+ y = y/K;
+
+ // Scale (x,y):
+
+ var max = x + y;
+
+ var shift = 30;
+
+ while(max >= 1)
+ {
+  max = max/2;
+
+  shift--;
+ }
+
+ x = (x * Math.pow(2,shift)) & 0xffffffff;
+
+ y = (y * Math.pow(2,shift)) & 0xffffffff;
+
+ var theta = 0;
+
+ // the array of angles to add to theta:
+
+ var atan_arr = [];
+
+ atan_arr = calcAtanArr();
+
+ var out_str = "Input (X, Y, Theta) - 32 Bit Scaled Integers (in octal):\r\n\r\n";
+
+ out_str += col_print_int(x) + col_print_int(y) + col_print_int(theta) + "\r\n\r\n";
+
+ out_str += "Cordic - 32 x pseudo-rotations:\r\n\r\n";
+
+ // perform 32 iterations (pseudo-rotations):
+
+ for(var i=0;i<32;i++)
+ {
+  // the direction of rotation:
+
+  var dir = -1;
+
+  if(y > 0)
+  {
+   dir = 1;
+  }
+
+  theta = Add_32(theta,dir * atan_arr[i]);
+
+  var x_i = x;
+
+  var y_i = y;
+
+  x_i = Add_32(x_i,dir * (y >> i));
+
+  y_i = Sub_32(y_i,dir * (x >> i));
+
+  x = x_i;
+
+  y = y_i;
+
+  out_str += col_print_int(x) + col_print_int(y) + col_print_int(theta) + "\r\n";
+ }
+
+ // Unscale (x,y,theta):
+
+ x = x/Math.pow(2,shift);
+
+ y = y/Math.pow(2,shift);
+
+ theta = 100*unscale_32(theta);
+
+ out_str += "\r\nResult - Unscaled:\r\n\r\n";
+
+ out_str += col_print(x) + col_print(y) + col_print(theta) + "\r\n";
+ 
+ document.getElementById("txtOut").value = out_str;
+}
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+function scale_32(a)
+{
+ // scale up a float value to a 32-bit 2's complement integer:
+
+ var result = a * Math.pow(2,30);
+
+ return (result & 0xffffffff);
+}
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+function unscale_32(a)
+{
+ // unscale a 32-bit 2's complement integer, back to a float value:
+
+ return a/Math.pow(2,30);
+}
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+function Add_32(a,b)
+{
+ // 32-bit two's complement addition:
+
+ var c = (a>>>0) + (b>>>0);
+
+ c &= 0xffffffff;
+
+ return c;
+}
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+function Sub_32(a,b)
+{
+ // 32-bit two's complement subtraction:
+
+ var c = ~(b>>>0) + 1;
+
+ c += (a>>>0);
+
+ c &= 0xffffffff;
+
+ return c;
+}
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+function calcAtanArr()
+{
+ var tmp_arr = [];
+
+ for(var i=0;i<32;i++)
+ {
+  tmp_arr[i] = (360/(2*Math.PI)) * Math.atan(1/Math.pow(2,i));
+
+  tmp_arr[i] = scale_32(tmp_arr[i]/100);
+ }
+
+ return tmp_arr;
+}
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+function calc_K(N)
+{
+ var K;
+
+ var prev_K=1;
+
+ for(var i=0;i<N;i++)
+ {
+  K = 1/Math.pow(2,i);
+
+  K *= K;
+
+  K += 1;
+
+  K = Math.sqrt(K);
+
+  K *= prev_K;
+
+  prev_K = K;
+ }
+
+ return K;
+}
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+function col_print_int(val)
+{
+ var str = val.toString();
+
+ // print a 32 bit integer as two 16 bit words - in octal:
+
+ var upper = (val >>> 16) & 0xffff;
+
+ var lower = val & 0xffff;
+
+ var tmp = upper.toString(8);
+
+ while(tmp.length < 6) tmp = " " + tmp;
+
+ str = tmp + "  ";
+
+ tmp = lower.toString(8);
+
+ while(tmp.length < 6) tmp = " " + tmp;
+ 
+ str += tmp + "      ";
+
+ return str;
+}
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+function col_print(val)
+{
+ // print a float value to 10 decimal places:
+
+ var str = val.toFixed(10);
+
+ while(str.length < 20)
+ {
+  str += " ";
+ }
+
+ return str;
+}
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+function Show_Atan()
+{
+ // print atan[i] as 32 bit octal values:
+
+ var atan_arr = calcAtanArr();
+
+ var i;
+
+ var str = "";
+
+ for(i=0;i<32;i++)
+ {
+  str += col_print_int(atan_arr[i]) + "\r\n"; 
+ }
+
+ document.getElementById("txtOut").value = str;
+}
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+function Clear()
+{
+ document.getElementById("txtOut").value = "";
+}
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+</script>
+
+<body>
+
+<input type="text" id="angle" size="10">
+
+<input type="button" value="Calc (x,y)" onclick="Calc_Rotation()">
+
+<input type="text" id="x_input" size="10">
+
+<input type="text" id="y_input" size="10">
+
+<input type="button" value="Calc (R,&theta;)" onclick="Calc_Vector()">
+
+<input type="button" value="Show Atan" onclick="Show_Atan()">
+
+<input type="button" value="Clear" onclick="Clear()">
+
+<br><br>
+
+<textarea id="txtOut" rows="43" cols="80" spellcheck="false"></textarea>
+
+</body>
+
+</html>

@@ -1,0 +1,43 @@
+C:/Users/Denis/sdrive/ESD2/labs/04/cordic.vhd {1 {vcom -work work -2002 -explicit C:/Users/Denis/sdrive/ESD2/labs/04/cordic.vhd
+Model Technology ModelSim PE Student Edition vcom 10.1d Compiler 2012.11 Nov  2 2012
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package std_logic_arith
+-- Loading package STD_LOGIC_SIGNED
+-- Loading package cordic_stage_pkg
+-- Compiling entity cordic
+-- Compiling architecture rtl of cordic
+
+} {} {}} C:/Users/Denis/sdrive/ESD2/labs/04/cordic_tb.vhd {1 {vcom -work work -2002 -explicit C:/Users/Denis/sdrive/ESD2/labs/04/cordic_tb.vhd
+Model Technology ModelSim PE Student Edition vcom 10.1d Compiler 2012.11 Nov  2 2012
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Compiling entity cordic_tb
+-- Compiling architecture tb of cordic_tb
+
+} {} {}} C:/Users/Denis/sdrive/ESD2/labs/04/cordic_stage.vhd {1 {vcom -work work -2002 -explicit C:/Users/Denis/sdrive/ESD2/labs/04/cordic_stage.vhd
+Model Technology ModelSim PE Student Edition vcom 10.1d Compiler 2012.11 Nov  2 2012
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Compiling package cordic_stage_pkg
+-- Loading package signed_bitshift_pkg
+-- Compiling entity cordic_stage
+-- Compiling architecture rtl of cordic_stage
+
+} {} {}} C:/Users/Denis/sdrive/ESD2/labs/04/signed_bitshift_pkg.vhd {1 {vcom -work work -2002 -explicit C:/Users/Denis/sdrive/ESD2/labs/04/signed_bitshift_pkg.vhd
+Model Technology ModelSim PE Student Edition vcom 10.1d Compiler 2012.11 Nov  2 2012
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Compiling package signed_bitshift_pkg
+-- Compiling package body signed_bitshift_pkg
+-- Loading package signed_bitshift_pkg
+
+} {} {}}

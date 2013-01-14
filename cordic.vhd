@@ -1,6 +1,10 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
+USE IEEE.std_logic_signed.ALL;
+
+LIBRARY work;
+USE work.cordic_stage_pkg.ALL;
 
 ENTITY cordic IS
   PORT (
@@ -25,120 +29,94 @@ ENTITY cordic IS
     -- sin result on bits [31:16] and cos result on bits [15:0].  Both the
     -- sine and cosine results are in fixed point notation with one sign bit
     -- followed by 8-bits behind decimal point.
-    result : OUT std_logic_vector(31 DOWNTO 0);
+    result : OUT std_logic_vector(31 DOWNTO 0)
   );
 END ENTITY cordic;
 
+
+
 ARCHITECTURE rtl OF cordic IS
 
-  CONSTANT HIGH : std_logic := '1';
-  CONSTANT LOW  : std_logic := '0';
 
-  TYPE signed_array IS ARRAY(natural RANGE <> ) OF signed(15 DOWNTO 0);  
+
+  TYPE signed_array IS ARRAY(natural RANGE <> ) OF signed(16 DOWNTO 0);
   CONSTANT atan_table : signed_array := (
-    -- Q0.15 Fixed Point, Scale Factor (R) = 2^16 / 180
-    to_signed(16384 , signed_array'length)   
-  , to_signed(9672  , signed_array'length)    
-  , to_signed(5110  , signed_array'length)    
-  , to_signed(2594  , signed_array'length)    
-  , to_signed(1302  , signed_array'length)    
-  , to_signed(652   , signed_array'length)   
-  , to_signed(326   , signed_array'length)   
-  , to_signed(163   , signed_array'length)   
-  , to_signed(81    , signed_array'length)    
-  , to_signed(41    , signed_array'length)    
-  , to_signed(20    , signed_array'length)    
-  , to_signed(10    , signed_array'length)    
-  , to_signed(5     , signed_array'length)   
-  , to_signed(3     , signed_array'length)   
-  , to_signed(1     , signed_array'length)   
-  , to_signed(1     , signed_array'length)   
+    -- Q0.15 Fixed Point, Scale Factor (K) = 1024
+      to_signed(23040, 17)   -- 22.5
+    , to_signed(11520, 17)   -- 11.25
+    , to_signed(5760, 17)   -- 5.625
+    , to_signed(2880, 17)    -- 2.8125
+    , to_signed(1440, 17)    -- 1.40625
+    , to_signed(720, 17)    -- 0.703125
+    , to_signed(360, 17)     -- 0.3515625
+    , to_signed(180, 17)     -- 0.3515625
+    -- , to_signed(57, 17)
+    -- , to_signed(29, 17)
+    -- , to_signed(14, 17)
+    -- , to_signed(7, 17)
+    -- , to_signed(4, 17)
+    -- , to_signed(2, 17)
+    -- , to_signed(1, 17)
+    -- , to_signed(0, 17)
 
   );
 
-  TYPE state_type IS (IDLE, WORKING, DONE);
-  SIGNAL current_state : state_type := IDLE;
-  SIGNAL next_state    : state_type := IDLE;
+  CONSTANT K : signed(8 DOWNTO 0) := to_signed(622, 9); -- magic number 0.60725293 * (K = 1024)
 
-  SIGNAL x : std_logic_vector(8 DOWNTO 0);
-  SIGNAL y : std_logic_vector(8 DOWNTO 0);
-
-  SIGNAL z : std_logic_vector(15 DOWNTO 0);
+  SIGNAL x : signed(8 DOWNTO 0)   := (OTHERS => '0');
+  SIGNAL y : signed(8 DOWNTO 0)   := (OTHERS => '0');
+  SIGNAL z : signed(16 DOWNTO 0)  := (OTHERS => '0');
 
   ALIAS sin IS result(31 DOWNTO 16);
   ALIAS cos IS result(15 DOWNTO 0);
+
+  TYPE xy_stage_array IS ARRAY(0 TO atan_table'length) OF signed(x'range);
+  TYPE  z_stage_array IS ARRAY(0 TO atan_table'length) OF signed(z'range);
+
+  SIGNAL x_stages : xy_stage_array := (OTHERS => (OTHERS => '0'));
+  SIGNAL y_stages : xy_stage_array := (OTHERS => (OTHERS => '0'));
+  SIGNAL z_stages : z_stage_array  := (OTHERS => (OTHERS => '0'));
+
+  SIGNAL i_angle : std_logic_vector(angle'range) := (OTHERS => '0');
+  SIGNAL i_sin   : std_logic_vector(sin'range) := (OTHERS => '0');
+  SIGNAL i_cos   : std_logic_vector(cos'range) := (OTHERS => '0');
+
 BEGIN
 
-  sync : PROCESS(clk, reset)
-    BEGIN
-      IF reset = HIGH THEN
-        current_state <= IDLE;
-      ELSIF rising_edge(clk) THEN
-        current_state <= next_state;
-      END IF;
-  END PROCESS;
+  x_stages(0) <= K;
+  y_stages(0) <= (OTHERS => '0');
+  z_stages(0) <= (OTHERS => '0');
 
-  comb : PROCESS(next_state)
-    BEGIN
-      CASE(next_state) IS
-        WHEN IDLE     =>
-          done <= LOW;
+  i_sin <= "0000000" & std_logic_vector(y_stages(8));
+  i_cos <= "0000000" & std_logic_vector(x_stages(8));
 
-          IF START = HIGH THEN
-            next_state <= WORKING;
-          ELSE
-            next_state <= IDLE;
-          END IF;
+PROCESS(clk) BEGIN
+IF rising_edge(clk) THEN
+  i_angle <= angle;
+  sin     <= i_sin;
+  cos     <= i_cos;
+END IF;
+END PROCESS;
 
 
-        WHEN WORKING  =>
-          START      <= LOW;
-          next_state <= DONE;
+  
+stage_generate: FOR i in 0 to atan_table'high GENERATE
+    stage : cordic_stage
+    GENERIC MAP(
+      STAGE     => i,
+      ATAN_VAL  => atan_table(i)
+    )
+    PORT MAP(
+      angle => i_angle,
+      
+      x_in  => x_stages(i),
+      y_in  => y_stages(i),
+      z_in  => z_stages(i),
 
-
-        WHEN DONE     =>
-          done <= HIGH;
-
-          IF START = HIGH THEN
-            next_state <= WORKING;
-          ELSE
-            next_state <= DONE;
-          END IF;
-
-
-        WHEN OTHERS   =>
-          next_state <= IDLE;
-
-      END CASE;
-  END PROCESS;
-
-  calculate : PROCESS(clk, reset, next_state)
-    BEGIN
-      IF rising_edge(clk) THEN
-
-        IF reset = HIGH THEN
-          x <= (OTHERS => '0');
-          y <= (OTHERS => '0');
-          z <= (OTHERS => '0');
-        ELSIF next_state = WORKING THEN
-        
-          FOR i IN atan_table'range LOOP
-            IF z_reg < ANGLE THEN
-              x <= x - shift_right(y,i);
-              y <= y + shift_right(x,i);
-              z <= z + atan_table(i);
-            ELSE
-              x <= x + shift_right(y,i);
-              y <= y - shift_right(x,i);
-              z <= z - atan_table(i);
-            END IF;
-          END LOOP; 
-
-        END IF;
-      END IF;
-  END PROCESS;
-
-  sin <= y;
-  cos <= x;
-
+      x_out => x_stages(i+1),
+      y_out => y_stages(i+1),
+      z_out => z_stages(i+1)
+    );
+  END GENERATE;
+  
 END ARCHITECTURE rtl;
