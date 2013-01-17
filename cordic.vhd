@@ -41,27 +41,18 @@ ARCHITECTURE rtl OF cordic IS
 
   TYPE signed_array IS ARRAY(natural RANGE <> ) OF signed(16 DOWNTO 0);
   CONSTANT atan_table : signed_array := (
-    -- Q0.15 Fixed Point, Scale Factor (K) = 1024
-      to_signed(23040, 17)   -- 22.5
-    , to_signed(11520, 17)   -- 11.25
-    , to_signed(5760, 17)   -- 5.625
-    , to_signed(2880, 17)    -- 2.8125
-    , to_signed(1440, 17)    -- 1.40625
-    , to_signed(720, 17)    -- 0.703125
-    , to_signed(360, 17)     -- 0.3515625
-    , to_signed(180, 17)     -- 0.3515625
-    -- , to_signed(57, 17)
-    -- , to_signed(29, 17)
-    -- , to_signed(14, 17)
-    -- , to_signed(7, 17)
-    -- , to_signed(4, 17)
-    -- , to_signed(2, 17)
-    -- , to_signed(1, 17)
-    -- , to_signed(0, 17)
-
+    -- Q0.15 Fixed Point, Scale Factor (K) = 256
+      to_signed(11520, 17) -- 45.0
+    , to_signed(5760, 17)  -- 22.5
+    , to_signed(2880, 17)  -- 11.25
+    , to_signed(1440, 17)  -- 5.625
+    , to_signed(720, 17)   -- 2.8125
+    , to_signed(360, 17)   -- 1.40625
+    , to_signed(180, 17)   -- 0.703125
+    , to_signed(90, 17)   -- 0.3515625
   );
 
-  CONSTANT K : signed(8 DOWNTO 0) := to_signed(622, 9); -- magic number 0.60725293 * (K = 1024)
+  CONSTANT K : signed(8 DOWNTO 0) := to_signed(155, 9); -- magic number 0.60725293 * (K = 1024)
 
   SIGNAL x : signed(8 DOWNTO 0)   := (OTHERS => '0');
   SIGNAL y : signed(8 DOWNTO 0)   := (OTHERS => '0');
