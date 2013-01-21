@@ -65,21 +65,20 @@ PROCESS(x_in, y_in, z_in, angle, i_x, i_y) BEGIN
 i_x(0) <= x_in;
 i_y(0) <= y_in;
 FOR i in 0 to STAGE LOOP
-	IF z_in < signed(angle) THEN
-		i_x(i+1) <= i_x(i) - ('0' & i_y(i)(i_y(i)'high-1 downto 0) );
-		i_y(i+1) <= i_y(i) + ('0' & i_x(i)(i_x(i)'high-1 downto 0) );
-	ELSE
-		i_x(i+1) <= i_x(i) + ('0' & i_y(i)(i_y(i)'high-1 downto 0) );
-		i_y(i+1) <= i_y(i) - ('0' & i_x(i)(i_x(i)'high-1 downto 0) );
-	END IF;
+	i_x(i+1) <= '0' & i_x(i)( i_x(i)'high-1 downto 0);
+	i_y(i+1) <= '0' & i_y(i)( i_y(i)'high-1 downto 0);
 END LOOP;
-x_out <= i_x(i_x'high);
-y_out <= i_y(i_y'high);
+
 IF z_in < signed(angle) THEN
-	z_out <= z_in + ATAN_VAL;
+	x_out <= signed(x_in) + signed(i_y(i_y'high));
+	y_out <= signed(y_in) - signed(i_x(i_x'high));
+	z_out <= z_in 		  + ATAN_VAL;
 ELSE
-	z_out <= z_in - ATAN_VAL;
+	x_out <= signed(x_in) - signed(i_y(i_y'high));
+	y_out <= signed(y_in) + signed(i_x(i_x'high));
+	z_out <= z_in         - ATAN_VAL;
 END IF;
+
 END PROCESS;
 
 END ARCHITECTURE rtl;
